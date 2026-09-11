@@ -187,7 +187,29 @@ def handle_button(update, context):
             del user_files[user_id]
 
 
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+class HealthCheckHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/plain")
+        self.end_headers()
+        self.wfile.write(b"OK - Bot is active!")
+
+    def log_message(self, format, *args):
+        return  # Silence HTTP logs
+
+def start_health_check_server():
+    port = int(os.environ.get("PORT", 8080))
+    server = HTTPServer(("0.0.0.0", port), HealthCheckHandler)
+    print(f"Health check server running on port {port}...")
+    server.serve_forever()
+
 def main():
+    # Start HTTP server thread so Render detects a valid Web Service on Free Tier ($0/mo)
+    threading.Thread(target=start_health_check_server, daemon=True).start()
+
     request = Request(
         connect_timeout=60,
         read_timeout=60
@@ -215,3 +237,4 @@ def main():
     updater.idle()
 if __name__ == "__main__":
     main()
+
