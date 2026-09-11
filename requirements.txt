@@ -1,0 +1,6 @@
+python-telegram-bot==13.15
+pdf2docx
+python-docx
+pillow
+reportlab
+pymupdf
