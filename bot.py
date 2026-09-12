@@ -206,9 +206,34 @@ def start_health_check_server():
     print(f"Health check server running on port {port}...")
     server.serve_forever()
 
+import urllib.request
+
+def self_ping():
+    ping_url = os.environ.get("PING_URL") or os.environ.get("RENDER_EXTERNAL_URL")
+    if not ping_url:
+        print("Self-ping disabled: Neither PING_URL nor RENDER_EXTERNAL_URL is configured.")
+        print("Tip: Add PING_URL=https://tele-bot-file1go.onrender.com to Render Environment Variables.")
+        return
+
+    if not ping_url.startswith("http://") and not ping_url.startswith("https://"):
+        ping_url = "https://" + ping_url
+
+    print(f"Self-ping active for target: {ping_url}")
+    while True:
+        time.sleep(720)  # Ping every 12 minutes (720 seconds)
+        try:
+            req = urllib.request.Request(ping_url, headers={"User-Agent": "Render-Self-Ping/1.0"})
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                print(f"[Self-Ping] Ping sent to {ping_url} - Status: {resp.status}")
+        except Exception as e:
+            print(f"[Self-Ping] Failed to ping {ping_url}: {e}")
+
 def main():
     # Start HTTP server thread so Render detects a valid Web Service on Free Tier ($0/mo)
     threading.Thread(target=start_health_check_server, daemon=True).start()
+
+    # Start Self-Ping thread to ping every 12 minutes
+    threading.Thread(target=self_ping, daemon=True).start()
 
     request = Request(
         connect_timeout=60,

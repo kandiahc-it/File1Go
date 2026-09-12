@@ -8,3 +8,6 @@ services:
     envVars:
       - key: BOT_TOKEN
         sync: false
+      - key: PING_URL
+        value: https://tele-bot-file1go.onrender.com
+

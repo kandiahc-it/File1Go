@@ -1,0 +1,21 @@
+name: Keep Render Service Alive
+
+on:
+  schedule:
+    # Run every 14 minutes (Render sleeps after 15 minutes of inactivity)
+    - cron: '*/14 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render Web Service
+        run: |
+          URL="${{ secrets.RENDER_APP_URL }}"
+          if [ -z "$URL" ]; then
+            # Default fallback URL for tele-bot-file1go
+            URL="https://tele-bot-file1go.onrender.com"
+          fi
+          echo "Pinging Render App at $URL..."
+          curl -s -f "$URL" || echo "Ping request executed."
