@@ -9,3 +9,4 @@ temp/*
 .gitignore
 .vscode/
 .idea/
+config.py
