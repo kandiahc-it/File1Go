@@ -7,6 +7,8 @@ from telegram.ext import (
     Filters,
     CommandHandler
 )
+from telegram.utils.request import Request
+
 # Retrieve BOT_TOKEN from environment variables (Render/production), or fallback to local config.py
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
