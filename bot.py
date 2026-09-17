@@ -7,8 +7,20 @@ from telegram.ext import (
     Filters,
     CommandHandler
 )
-from telegram.utils.request import Request
-from config import BOT_TOKEN
+# Retrieve BOT_TOKEN from environment variables (Render/production), or fallback to local config.py
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+
+if not BOT_TOKEN:
+    try:
+        from config import BOT_TOKEN
+    except ImportError:
+        pass
+
+if not BOT_TOKEN:
+    raise ValueError(
+        "ERROR: BOT_TOKEN is not configured! "
+        "Please set BOT_TOKEN in Render Environment Variables or in your local environment/config.py."
+    )
 
 from converters.pdf_docx import convert_pdf_to_docx
 from converters.docx_pdf import convert_docx_to_pdf
